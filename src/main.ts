@@ -1,23 +1,59 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import { setupCounter } from './counter'
+import "./style.scss"
+import FileSaver from "file-saver";
+class Blackboard {
+  constructor(
+    public el = document.querySelector<HTMLCanvasElement>('#canvas')!,
+    private app = el.getContext('2d')!,
+    private width: number = el.width,
+    private height: number = el.height,
+    private bgColor = '#000',
+    private lineColor = '#fff'
+  ) {
+    this.initCanvas();
+    // 键盘事件
+    this.bindEvent();
+    // 按钮事件
+    this.bindBtnEvent();
+  }
+  initCanvas() {
+    this.app.fillStyle = this.bgColor
+    this.app.fillRect(0, 0, this.width, this.height)
+  }
+  bindBtnEvent() {
+    this.clearCanvasContent();
+    this.saveCanvasContent();
+  }
+  // 保存画布内容
+  saveCanvasContent() {
+    document.getElementById("save")!.addEventListener('click', () => {
+      this.el.toBlob((blob) => {
+        FileSaver.saveAs(blob!, '签名');
+      })
+    })
+  }
+  // 清空画布
+  clearCanvasContent() {
+    document.getElementById("clear")!.addEventListener("click", () => {
+      this.app.fillRect(0, 0, this.width, this.height)
+    })
+  }
+  // 绑定事件
+  bindEvent() {
+    const callBack = this.drawLine.bind(this);
+    this.el.addEventListener('mousedown', () => {
+      this.app.beginPath();
+      this.app.strokeStyle = this.lineColor;
+      this.app.lineWidth = 1
+      this.el.addEventListener('mousemove', callBack);
+    })
+    document.addEventListener("mouseup", () => {
+      this.el.removeEventListener("mousemove", callBack);
+    })
+  }
+  drawLine(event: MouseEvent) {
+    this.app.lineTo(event.offsetX, event.offsetY);
+    this.app.stroke();
+  }
+}
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
-
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+new Blackboard();
