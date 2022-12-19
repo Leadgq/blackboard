@@ -23,9 +23,12 @@ class Blackboard {
     this.clearCanvasContent();
     this.saveCanvasContent();
   }
+  getEl(id: string) {
+    return document.getElementById(id)!;
+  }
   // 保存画布内容
   saveCanvasContent() {
-    document.getElementById("save")!.addEventListener('click', () => {
+    this.getEl('save')!.addEventListener('click', () => {
       this.el.toBlob((blob) => {
         FileSaver.saveAs(blob!, '签名');
       })
@@ -33,7 +36,7 @@ class Blackboard {
   }
   // 清空画布
   clearCanvasContent() {
-    document.getElementById("clear")!.addEventListener("click", () => {
+    this.getEl("clear").addEventListener("click", () => {
       this.app.fillRect(0, 0, this.width, this.height)
     })
   }
