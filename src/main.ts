@@ -1,6 +1,7 @@
 import "./style.scss"
 import FileSaver from "file-saver";
 class Blackboard {
+  // 是否开始写字
   protected isStart: boolean = false;
   constructor(
     public el = document.querySelector<HTMLCanvasElement>('#canvas')!,
@@ -42,6 +43,7 @@ class Blackboard {
   // 清空画布
   clearCanvasContent() {
     this.getEl("#clear")?.addEventListener("click", () => {
+      if (this.isStart) this.isStart = false;
       this.app.fillRect(0, 0, this.width, this.height)
     })
   }
