@@ -23,19 +23,8 @@ export default class Blackboard {
     img.src = this.imageSrc;
     img.onload = () => {
       this.bgImage = img;
-
-      const canvasW = this.width;
-      const canvasH = this.height;
-      const imgW = img.naturalWidth;
-      const imgH = img.naturalHeight;
-
-      const scale = Math.min(canvasW / imgW, canvasH / imgH);
-      const drawW = imgW * scale;
-      const drawH = imgH * scale;
-      const dx = (canvasW - drawW) / 2;
-      const dy = (canvasH - drawH) / 2;
-
-      this.app.drawImage(img, dx, dy, drawW, drawH);
+      // 加载完成后重绘背景图
+      this.redrawBgImage();
     }
   } 
 
@@ -72,20 +61,28 @@ export default class Blackboard {
     this.app.fillRect(0, 0, this.width, this.height);
     // 如果有背景图，重绘背景图（只清除笔迹）
     if (this.bgImage) {
-      const canvasW = this.width;
-      const canvasH = this.height;
-      const imgW = this.bgImage.naturalWidth;
-      const imgH = this.bgImage.naturalHeight;
-
-      const scale = Math.min(canvasW / imgW, canvasH / imgH);
-      const drawW = imgW * scale;
-      const drawH = imgH * scale;
-      const dx = (canvasW - drawW) / 2;
-      const dy = (canvasH - drawH) / 2;
-
-      this.app.drawImage(this.bgImage, dx, dy, drawW, drawH);
+      this.redrawBgImage();
     }
   }
+  
+  private redrawBgImage() {
+    if (!this.bgImage) return;
+
+    const canvasW = this.width;
+    const canvasH = this.height;
+    const imgW = this.bgImage.naturalWidth;
+    const imgH = this.bgImage.naturalHeight;
+
+    const scale = Math.min(canvasW / imgW, canvasH / imgH);
+    const drawW = imgW * scale;
+    const drawH = imgH * scale;
+    const dx = (canvasW - drawW) / 2;
+    const dy = (canvasH - drawH) / 2;
+
+    this.app.drawImage(this.bgImage, dx, dy, drawW, drawH);
+  }
+
+
   // 绑定事件
   bindEvent() {
     const onPointerMove = (e: PointerEvent) => {
